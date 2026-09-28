@@ -1,0 +1,10 @@
+## Host Junk
+.venv/
+.git/
+.DS_Store
+Thumbs.db
+
+## Pycharm Junk
+__pycache__/
+*.py[cod]
+.idea/
