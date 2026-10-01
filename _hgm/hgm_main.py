@@ -1,5 +1,6 @@
 ## Versioning Pocket #####
 ##########################
+import os
 from typing import NamedTuple
 class AppInfo(NamedTuple):
     name: str
@@ -18,6 +19,7 @@ HGM = AppInfo(
 # Imports ----
 ### PYTHON
 import json
+from os import system
 from datetime import datetime
 from pathlib import Path
 
@@ -40,6 +42,9 @@ class HGManager:
         print(f"Using Data at: {self.data_path}")
         self.database = self.data_path / "database.json"
         ## TODO Migrate to SQLite, Allow Loading Independent of [self.run]
+
+    def clear(self):
+        system("cls" if os.name == "nt" else "clear")
 
 
     def run(self):
@@ -86,7 +91,32 @@ class HGManager:
                 json.dump(self.database_dict, f, indent=4)
 
     def main_loop(self):
-        pass
+        self.running = True
+        while self.running:
+            self.clear()
+            print("\n\n----- [HOME GROCERY MANAGER] Main Menu -----\n")
+            print(" ADD = Add New Item")
+            print(" USE = Use an Existing Item")
+            print(" LIST = Display Items Currently Available")
+            print(" SHOP = Display Current Shopping List")
+            print(" EXIT = Close the Program")
+
+            user_input = input("\n> ")
+
+            if user_input.lower() == "exit":
+                break
+
+            if user_input.lower() == "add":
+                pass
+
+            if user_input.lower() == "use":
+                pass
+
+            if user_input.lower() == "list":
+                pass
+
+            if user_input.lower() == "shop":
+                pass
 
 if __name__ == "__main__":
     hgm = HGManager()
