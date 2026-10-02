@@ -11,7 +11,7 @@ class AppInfo(NamedTuple):
 
 HGM = AppInfo(
     name="Home Grocery Manager",
-    version=(0, 0, 4),
+    version=(0, 1, 0),
 )
 
 ##########################
