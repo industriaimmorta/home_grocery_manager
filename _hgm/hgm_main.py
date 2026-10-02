@@ -128,7 +128,7 @@ class HGManager:
 
             if user_input.lower() == "shop":
                 self.status = "shop"
-                pass
+                self.shopping_list()
 
     def add_item(self):
         self.clear()
@@ -228,8 +228,8 @@ class HGManager:
 
     def list_database(self):
         self.clear()
-        itemlist = ""
         while self.status == "list":
+            itemlist = ""
             for category in self.database_dict["categories"]:
                 for item in self.database_dict["categories"][category]:
                     itemlist += f"\n{category} - {item}: {self.database_dict["categories"][category][item]["in_house"]}"
@@ -242,7 +242,25 @@ class HGManager:
                 print("Unknown response. Returning to main menu.")
                 self.status = "main"
 
+    def shopping_list(self):
+        self.clear()
+        while self.status == "shop":
+            shoplist = ""
+            for category in self.database_dict["categories"]:
+                for item in self.database_dict["categories"][category]:
+                    item_onhand = self.database_dict["categories"][category][item]["in_house"]
+                    item_min = self.database_dict["categories"][category][item]["minimum"]
+                    if item_onhand <= item_min:
+                        shoplist += f"\n{category} - {item}"
 
+
+            print(shoplist)
+            loop = (input("Return to Main Menu?\nYes or No\n> ")).strip().lower()
+            if loop == "yes":
+                self.status = "main"
+            if loop not in ("yes", "no"):
+                print("Unknown response. Returning to main menu.")
+                self.status = "main"
 
 
 if __name__ == "__main__":
