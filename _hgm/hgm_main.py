@@ -26,6 +26,7 @@ from pathlib import Path
 class HGManager:
     def __init__(self):
         self.running = False
+        self.status = None
         self.database_dict = None
         self.time = datetime.now().strftime("%Y-%m-%d__%H-%M-%S")
 
@@ -46,6 +47,13 @@ class HGManager:
     def clear(self):
         system("cls" if os.name == "nt" else "clear")
 
+    def error(self):
+        print(f"Error Completing State: {self.status}")
+        print("Attempting to save database---")
+        self.close_database()
+        print("Returning to Main Menu")
+        self.status = "main"
+
 
     def run(self):
         try:
@@ -61,7 +69,6 @@ class HGManager:
 
     def close_database(self):
         self.data_path.mkdir(parents=True, exist_ok=True)
-
         with self.database.open("w", encoding="utf-8") as f:
             json.dump(self.database_dict, f, indent=4)
 
@@ -92,6 +99,7 @@ class HGManager:
 
     def main_loop(self):
         self.running = True
+        self.status = "main"
         while self.running:
             self.clear()
             print("\n\n----- [HOME GROCERY MANAGER] Main Menu -----\n")
@@ -107,16 +115,79 @@ class HGManager:
                 break
 
             if user_input.lower() == "add":
-                pass
+                self.status = "add"
+                self.add_item()
 
             if user_input.lower() == "use":
+                self.status = "use"
                 pass
 
             if user_input.lower() == "list":
+                self.status = "list"
                 pass
 
             if user_input.lower() == "shop":
+                self.status = "shop"
                 pass
+
+    def add_item(self):
+        while self.status == "add":
+            item_new = False
+            print("\n\n----- [HOME GROCERY MANAGER] Add Item -----\n")
+            print("Enter Item Name:\n\n\n\n")
+            item_name = input("\n> ").strip().lower()
+            self.clear()
+
+            print("\n\n----- [HOME GROCERY MANAGER] Add Item -----\n")
+            print("Enter Item Category:\n")
+            print("Examples: pantry, freezer, refrigerator---\n\n")
+            category_name = input("\n> ").strip().lower()
+            self.clear()
+
+            print("\n\n----- [HOME GROCERY MANAGER] Add Item -----\n")
+            print("Enter Item Quantity to Add:\n\n\n\n")
+            quantity = int(input("\n> "))
+            self.clear()
+
+            if category_name not in self.database_dict["categories"]:
+                self.database_dict["categories"][category_name] = {}
+
+            if item_name not in self.database_dict["categories"][category_name]:
+                item_new = True
+                self.database_dict["categories"][category_name][item_name] = {}
+                self.database_dict["categories"][category_name][item_name]["in_house"] = quantity
+                self.database_dict["categories"][category_name][item_name]["minimum"] = 0
+                self.database_dict["categories"][category_name][item_name]["cost"] = 0
+
+            if item_new:
+                print("\n\n----- [HOME GROCERY MANAGER] Add Item -----\n")
+                print(f"Enter Minimum of {item_name} that should be ")
+                print("on hand before adding to shopping list:\n\n")
+                quantity = int(input("\n> "))
+                self.database_dict["categories"][category_name][item_name]["minimum"] = quantity
+                self.clear()
+
+                print("\n\n----- [HOME GROCERY MANAGER] Add Item -----\n")
+                print(f"Enter how much {item_name} costs:\n\n\n\n")
+                cost = float(input("\n> "))
+                self.database_dict["categories"][category_name][item_name]["cost"] = cost
+                self.clear()
+
+            if not item_new:
+                self.database_dict["categories"][category_name][item_name]["in_house"] += quantity
+
+
+            print("\n\n----- [HOME GROCERY MANAGER] Add Item -----\n")
+            print(f"Add another item?:\n\n\n")
+            loop = (input("Enter Yes or No\n> ")).strip().lower()
+            if loop == "no":
+                self.status = "main"
+            if loop not in ("yes", "no"):
+                print("Unknown response. Returning to main menu.")
+                self.status = "main"
+
+
+
 
 if __name__ == "__main__":
     hgm = HGManager()
