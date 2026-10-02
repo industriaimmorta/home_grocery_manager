@@ -11,7 +11,7 @@ class AppInfo(NamedTuple):
 
 HGM = AppInfo(
     name="Home Grocery Manager",
-    version=(0, 0, 2),
+    version=(0, 0, 4),
 )
 
 ##########################
@@ -120,17 +120,18 @@ class HGManager:
 
             if user_input.lower() == "use":
                 self.status = "use"
-                pass
+                self.use_item()
 
             if user_input.lower() == "list":
                 self.status = "list"
-                pass
+                self.list_database()
 
             if user_input.lower() == "shop":
                 self.status = "shop"
                 pass
 
     def add_item(self):
+        self.clear()
         while self.status == "add":
             item_new = False
             print("\n\n----- [HOME GROCERY MANAGER] Add Item -----\n")
@@ -181,6 +182,61 @@ class HGManager:
             print(f"Add another item?:\n\n\n")
             loop = (input("Enter Yes or No\n> ")).strip().lower()
             if loop == "no":
+                self.status = "main"
+            if loop not in ("yes", "no"):
+                print("Unknown response. Returning to main menu.")
+                self.status = "main"
+
+    def use_item(self):
+        self.clear()
+        while self.status == "use":
+            category_name = None
+            print("\n\n----- [HOME GROCERY MANAGER] Use Item -----\n")
+            print("Enter Item Name:\n\n\n\n")
+            item_name = input("\n> ").strip().lower()
+            self.clear()
+            for category in self.database_dict["categories"]:
+                for item in self.database_dict["categories"][category]:
+                    if item == item_name:
+                        category_name = category
+                        break
+                if category_name is not None:
+                    break
+
+            if category_name == None:
+                print("Item is not currently in the database. Returning to main menu.")
+                self.status = "main"
+
+            else:
+                print("\n\n----- [HOME GROCERY MANAGER] Use Item -----\n")
+                print("How much was used?\n\n\n\n")
+                quantity = int(input("\n> "))
+                self.clear()
+
+                self.database_dict["categories"][category_name][item_name]["in_house"] -= quantity
+                if self.database_dict["categories"][category_name][item_name]["in_house"] <= 0:
+                    self.database_dict["categories"][category_name][item_name]["in_house"] = 0
+
+                print("\n\n----- [HOME GROCERY MANAGER] Use Item -----\n")
+                print(f"Use another item?:\n\n\n")
+                loop = (input("Enter Yes or No\n> ")).strip().lower()
+                if loop == "no":
+                    self.status = "main"
+                if loop not in ("yes", "no"):
+                    print("Unknown response. Returning to main menu.")
+                    self.status = "main"
+
+    def list_database(self):
+        self.clear()
+        itemlist = ""
+        while self.status == "list":
+            for category in self.database_dict["categories"]:
+                for item in self.database_dict["categories"][category]:
+                    itemlist += f"\n{category} - {item}: {self.database_dict["categories"][category][item]["in_house"]}"
+
+            print(itemlist)
+            loop = (input("Return to Main Menu?\nYes or No\n> ")).strip().lower()
+            if loop == "yes":
                 self.status = "main"
             if loop not in ("yes", "no"):
                 print("Unknown response. Returning to main menu.")
