@@ -136,61 +136,81 @@ class HGManager:
                 self.shopping_list()
 
     def add_item(self):
-        self.clear()
-        while self.status == "add":
-            item_new = False
-            print("\n\n----- [HOME GROCERY MANAGER] Add Item -----\n")
-            print("Enter Item Name:\n\n\n\n")
-            item_name = input("\n> ").strip().lower()
+        try:
             self.clear()
-
-            print("\n\n----- [HOME GROCERY MANAGER] Add Item -----\n")
-            print("Enter Item Category:\n")
-            print("Examples: pantry, freezer, refrigerator---\n\n")
-            category_name = input("\n> ").strip().lower()
-            self.clear()
-
-            print("\n\n----- [HOME GROCERY MANAGER] Add Item -----\n")
-            print("Enter Item Quantity to Add:\n\n\n\n")
-            quantity = float(input("\n> "))
-            self.clear()
-
-            if category_name not in self.database_dict["categories"]:
-                self.database_dict["categories"][category_name] = {}
-
-            if item_name not in self.database_dict["categories"][category_name]:
-                item_new = True
-                self.database_dict["categories"][category_name][item_name] = {}
-                self.database_dict["categories"][category_name][item_name]["in_house"] = quantity
-                self.database_dict["categories"][category_name][item_name]["minimum"] = 0
-                self.database_dict["categories"][category_name][item_name]["cost"] = 0
-
-            if item_new:
+            while self.status == "add":
+                item_new = False
+                located = False
+                category_name = None
                 print("\n\n----- [HOME GROCERY MANAGER] Add Item -----\n")
-                print(f"Enter Minimum of {item_name} that should be ")
-                print("on hand before adding to shopping list:\n\n")
+                print("Enter Item Name:\n\n\n\n")
+                item_name = input("\n> ").strip().lower()
+                self.clear()
+                for category in self.database_dict["categories"]:
+                    for item in self.database_dict["categories"][category]:
+                        if item == item_name:
+                            category_name = category
+                            located = True
+                            break
+                    if category_name is not None:
+                        break
+
+                if not located:
+                    print("\n\n----- [HOME GROCERY MANAGER] Add Item -----\n")
+                    print("Enter Item Category:\n")
+                    print("Examples: pantry, freezer, refrigerator---\n\n")
+                    category_name = input("\n> ").strip().lower()
+                    self.clear()
+
+                print("\n\n----- [HOME GROCERY MANAGER] Add Item -----\n")
+                if located:
+                    print(f"Adding to {item_name} in {category_name}.")
+                print("Enter Item Quantity to Add:\n\n\n")
                 quantity = float(input("\n> "))
-                self.database_dict["categories"][category_name][item_name]["minimum"] = quantity
                 self.clear()
+
+                if category_name not in self.database_dict["categories"]:
+                    self.database_dict["categories"][category_name] = {}
+
+                if item_name not in self.database_dict["categories"][category_name]:
+                    item_new = True
+                    self.database_dict["categories"][category_name][item_name] = {}
+                    self.database_dict["categories"][category_name][item_name]["in_house"] = quantity
+                    self.database_dict["categories"][category_name][item_name]["minimum"] = 0
+                    self.database_dict["categories"][category_name][item_name]["cost"] = 0
+
+                if item_new:
+                    print("\n\n----- [HOME GROCERY MANAGER] Add Item -----\n")
+                    print(f"Enter Minimum of {item_name} that should be ")
+                    print("on hand before adding to shopping list:\n\n")
+                    quantity = float(input("\n> "))
+                    self.database_dict["categories"][category_name][item_name]["minimum"] = quantity
+                    self.clear()
+
+                    print("\n\n----- [HOME GROCERY MANAGER] Add Item -----\n")
+                    print(f"Enter how much {item_name} costs:\n\n\n\n")
+                    cost = float(input("\n> "))
+                    self.database_dict["categories"][category_name][item_name]["cost"] = cost
+                    self.clear()
+
+                if not item_new:
+                    self.database_dict["categories"][category_name][item_name]["in_house"] += quantity
+
 
                 print("\n\n----- [HOME GROCERY MANAGER] Add Item -----\n")
-                print(f"Enter how much {item_name} costs:\n\n\n\n")
-                cost = float(input("\n> "))
-                self.database_dict["categories"][category_name][item_name]["cost"] = cost
-                self.clear()
+                print(f"Add another item?:\n\n\n")
+                loop = (input("Enter Yes or No\n> ")).strip().lower()
+                if loop == "no":
+                    self.status = "main"
+                if loop not in ("yes", "no"):
+                    print("Unknown response. Returning to main menu.")
+                    self.status = "main"
 
-            if not item_new:
-                self.database_dict["categories"][category_name][item_name]["in_house"] += quantity
-
-
-            print("\n\n----- [HOME GROCERY MANAGER] Add Item -----\n")
-            print(f"Add another item?:\n\n\n")
-            loop = (input("Enter Yes or No\n> ")).strip().lower()
-            if loop == "no":
-                self.status = "main"
-            if loop not in ("yes", "no"):
-                print("Unknown response. Returning to main menu.")
-                self.status = "main"
+        except Exception as e:
+            print("An Error Has Occurred. Returning to main menu.")
+            print(str(e))
+        finally:
+            self.status = "main"
 
     def use_item(self):
         self.clear()
