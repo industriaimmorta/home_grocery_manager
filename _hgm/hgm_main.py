@@ -1,4 +1,4 @@
-## Versioning Pocket #####
+#### Core Constructor ####
 ##########################
 import os
 from typing import NamedTuple
@@ -13,6 +13,12 @@ HGM = AppInfo(
     name="Home Grocery Manager",
     version=(0, 1, 0),
 )
+
+## confirmation variables
+y = {"yes", "y", "", "confirm"}
+n= {"no", "n", "exit"}
+gal = {"gallon", "gallons", "gal"}
+
 
 ##########################
 
@@ -135,6 +141,72 @@ class HGManager:
                 self.status = "shop"
                 self.shopping_list()
 
+    def search(self, item_name):
+        for category in self.database_dict["categories"]:
+            for item in self.database_dict["categories"][category]:
+                if item == item_name:
+                    verified = self.verify(category, item)
+                    if verified:
+                        return category, item
+        return None, None
+
+    def verify(self, category, item):
+        item_name = item
+        category_name = category
+        verified = None
+        print(f"Located {item_name} in {category_name}.")
+        print("Is this the correct item?")
+        while verified is None:
+            verify = input("\n> ").strip().lower()
+            if verify in y:
+                return True
+            elif verify in n:
+                return False
+            else:
+                print("Unaccepted Input----")
+
+    def quantity_process(self, quantity):
+        unit = ""
+        quan = ""
+        for character in quantity:
+            isnum = character.isdigit()
+            isalp = character.isalpha()
+            if isalp:
+                unit += character
+            if isnum:
+                quan += character
+            if character == ".":
+                quan += character
+
+        quantity = float(quan)
+        if unit in gal:
+            unit = "gal"
+        return quantity, unit
+
+
+    def input_loop(self):
+        self.clear()
+        category = None
+        item = None
+        payload = {}
+        try:
+            #Item Discovery
+            print("Enter Item Name:\n\n\n\n")
+            category, item = self.search()
+            self.clear()
+            print(f"Enter Item Quantity to {self.status.capitalize()}:\n\n\n\n")
+            quantity = (input("\n> "))
+            quantity, unit = self.quantity_process(quantity)
+
+
+
+        except:
+            pass
+
+        finally:
+            pass
+
+
     def add_item(self):
         try:
             self.clear()
@@ -166,7 +238,6 @@ class HGManager:
                 if located:
                     print(f"Adding to {item_name} in {category_name}.")
                 print("Enter Item Quantity to Add:\n\n\n")
-                quantity = float(input("\n> "))
                 self.clear()
 
                 if category_name not in self.database_dict["categories"]:
