@@ -55,11 +55,16 @@ class HGManager:
         self.status = "main"
 
 
-    def run(self):
+    def run(self, isolated):
         try:
-            self.validate()
-            self.main_loop()
-            self.close_database()
+            if isolated:
+                self.validate()
+                self.main_loop()
+                self.close_database()
+            else:
+                self.validate()
+                self.receive_package()
+                self.close_database()
 
         except Exception as e:
             print(str(e)) ###DEBUG
