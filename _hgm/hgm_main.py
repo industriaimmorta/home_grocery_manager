@@ -152,7 +152,7 @@ class HGManager:
 
             print("\n\n----- [HOME GROCERY MANAGER] Add Item -----\n")
             print("Enter Item Quantity to Add:\n\n\n\n")
-            quantity = int(input("\n> "))
+            quantity = float(input("\n> "))
             self.clear()
 
             if category_name not in self.database_dict["categories"]:
@@ -169,7 +169,7 @@ class HGManager:
                 print("\n\n----- [HOME GROCERY MANAGER] Add Item -----\n")
                 print(f"Enter Minimum of {item_name} that should be ")
                 print("on hand before adding to shopping list:\n\n")
-                quantity = int(input("\n> "))
+                quantity = float(input("\n> "))
                 self.database_dict["categories"][category_name][item_name]["minimum"] = quantity
                 self.clear()
 
@@ -215,7 +215,7 @@ class HGManager:
             else:
                 print("\n\n----- [HOME GROCERY MANAGER] Use Item -----\n")
                 print("How much was used?\n\n\n\n")
-                quantity = int(input("\n> "))
+                quantity = float(input("\n> "))
                 self.clear()
 
                 self.database_dict["categories"][category_name][item_name]["in_house"] -= quantity
